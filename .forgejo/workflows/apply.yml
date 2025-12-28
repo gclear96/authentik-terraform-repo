@@ -1,0 +1,70 @@
+name: terraform-apply
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: authentik-terraform
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    env:
+      TF_IN_AUTOMATION: "1"
+      AUTHENTIK_URL: ${{ secrets.AUTHENTIK_URL }}
+      AUTHENTIK_TOKEN: ${{ secrets.AUTHENTIK_TOKEN }}
+      TF_S3_ENDPOINT: ${{ secrets.TF_S3_ENDPOINT }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-1
+    steps:
+      - name: Checkout
+        uses: https://code.forgejo.org/actions/checkout@v4
+
+      - name: Install terraform (if missing)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v terraform >/dev/null 2>&1; then
+            terraform version
+            exit 0
+          fi
+          sudo apt-get update
+          sudo apt-get install -y unzip
+          curl -fsSL -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/1.14.3/terraform_1.14.3_linux_amd64.zip
+          sudo unzip -o /tmp/terraform.zip -d /usr/local/bin
+          terraform version
+
+      - name: Guard: required secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${AUTHENTIK_URL:?Set Forgejo secret AUTHENTIK_URL (e.g. http://platform-authentik-server.authentik.svc:80)}"
+          : "${AUTHENTIK_TOKEN:?Set Forgejo secret AUTHENTIK_TOKEN (scoped token; avoid long-lived admin/root)}"
+          : "${TF_S3_ENDPOINT:?Set Forgejo secret TF_S3_ENDPOINT (e.g. http://platform-garage.garage.svc:3900)}"
+          : "${AWS_ACCESS_KEY_ID:?Set Forgejo secret AWS_ACCESS_KEY_ID (Garage S3 key id)}"
+          : "${AWS_SECRET_ACCESS_KEY:?Set Forgejo secret AWS_SECRET_ACCESS_KEY (Garage S3 secret key)}"
+
+      - name: Terraform init
+        shell: bash
+        run: |
+          set -euo pipefail
+          terraform init -input=false \
+            -backend-config="endpoint=${TF_S3_ENDPOINT}" \
+            -backend-config="force_path_style=true" \
+            -backend-config="skip_credentials_validation=true" \
+            -backend-config="skip_metadata_api_check=true" \
+            -backend-config="skip_region_validation=true"
+
+      - name: Import existing resources (idempotent)
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./scripts/import-existing.sh
+
+      - name: Terraform apply
+        shell: bash
+        run: |
+          set -euo pipefail
+          terraform apply -auto-approve -input=false -no-color

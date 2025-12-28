@@ -1,0 +1,14 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+.terraformrc
+terraform.rc
+
+# Local outputs (DO NOT COMMIT)
+out/
+*.env
+*.tfvars
+*.tfvars.json
+
