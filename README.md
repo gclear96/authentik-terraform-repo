@@ -92,8 +92,17 @@ The backend is intentionally partial in `backend.tf`; supply the Garage endpoint
 
 ## CI notes (Forgejo Actions)
 
+- `terraform.yml`: on PR → fmt/validate; on push to `main` → import + plan + **auto-apply (non-destructive only)**
+- `apply.yml`: manual (`workflow_dispatch`) → import + plan + apply (supports destructive when explicitly allowed)
 - `AUTHENTIK_URL` should typically use the **in-cluster** Service, e.g. `http://platform-authentik-server.authentik.svc:80`.
 - Use a scoped Authentik token for `AUTHENTIK_TOKEN` (avoid long-lived admin/root).
+
+Required Forgejo secrets:
+
+- `AUTHENTIK_URL`
+- `AUTHENTIK_TOKEN`
+- `TF_S3_ENDPOINT` (example: `http://platform-garage.garage.svc:3900`)
+- `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` (Garage S3 key credentials)
 
 ## Initial scope
 
