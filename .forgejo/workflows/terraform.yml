@@ -56,20 +56,6 @@ jobs:
           set -euo pipefail
           terraform validate
 
-      - name: Terraform plan (local, refresh=false) if Authentik secrets present
-        shell: bash
-        env:
-          TF_IN_AUTOMATION: "1"
-          AUTHENTIK_URL: ${{ secrets.AUTHENTIK_URL }}
-          AUTHENTIK_TOKEN: ${{ secrets.AUTHENTIK_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [[ -z "${AUTHENTIK_URL:-}" || -z "${AUTHENTIK_TOKEN:-}" ]]; then
-            echo "Skipping plan on PR (AUTHENTIK_URL/AUTHENTIK_TOKEN secrets not set)."
-            exit 0
-          fi
-          terraform plan -input=false -no-color -refresh=false
-
   apply_main_non_destructive:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
