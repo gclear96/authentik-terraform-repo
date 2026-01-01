@@ -9,7 +9,7 @@ Terraform Authentik provider (`goauthentik/authentik`).
 - **Terraform state is sensitive**: Authentik configuration can contain secrets (e.g. OAuth client secrets),
   and Terraform state will often contain them. Treat the remote state (Garage `tf-state`) as a secret.
 
-## Cluster context (as of 2025-12-28)
+## Cluster context (last verified 2025-12-28)
 
 - Namespace: `authentik`
 - Service: `platform-authentik-server` (ports `80`/`443`; targets `9000`/`9443`)
@@ -99,7 +99,7 @@ The backend is intentionally partial in `backend.tf`; supply the Garage endpoint
 
 Required Forgejo secrets:
 
-- `AUTHENTIK_URL`
+- `AUTHENTIK_URL` (workflows read from `secrets.*`, even though it’s not sensitive)
 - `AUTHENTIK_TOKEN`
 - `TF_S3_ENDPOINT` (example: `http://platform-garage.garage.svc:3900`)
 - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` (Garage S3 key credentials)
