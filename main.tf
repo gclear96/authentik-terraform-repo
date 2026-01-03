@@ -17,6 +17,19 @@ data "authentik_flow" "grafana_invalidation" {
   slug = var.grafana_invalidation_flow_slug
 }
 
+# Default OIDC scopes for userinfo/id token claims.
+data "authentik_property_mapping_provider_scope" "openid" {
+  scope_name = "openid"
+}
+
+data "authentik_property_mapping_provider_scope" "email" {
+  scope_name = "email"
+}
+
+data "authentik_property_mapping_provider_scope" "profile" {
+  scope_name = "profile"
+}
+
 # Minimal, safe initial scope:
 # - Manage the Grafana OIDC provider/application pair.
 # - Avoid enforcing secrets and “everything Authentik can do” on day 1.
@@ -37,10 +50,15 @@ resource "authentik_provider_oauth2" "grafana" {
     },
   ]
 
+  property_mappings = [
+    data.authentik_property_mapping_provider_scope.openid.id,
+    data.authentik_property_mapping_provider_scope.email.id,
+    data.authentik_property_mapping_provider_scope.profile.id,
+  ]
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      property_mappings,
       signing_key,
       encryption_key,
     ]
@@ -80,10 +98,15 @@ resource "authentik_provider_oauth2" "argocd" {
     },
   ]
 
+  property_mappings = [
+    data.authentik_property_mapping_provider_scope.openid.id,
+    data.authentik_property_mapping_provider_scope.email.id,
+    data.authentik_property_mapping_provider_scope.profile.id,
+  ]
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      property_mappings,
       signing_key,
       encryption_key,
     ]
@@ -123,10 +146,15 @@ resource "authentik_provider_oauth2" "forgejo" {
     },
   ]
 
+  property_mappings = [
+    data.authentik_property_mapping_provider_scope.openid.id,
+    data.authentik_property_mapping_provider_scope.email.id,
+    data.authentik_property_mapping_provider_scope.profile.id,
+  ]
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      property_mappings,
       signing_key,
       encryption_key,
     ]
@@ -166,10 +194,15 @@ resource "authentik_provider_oauth2" "longhorn" {
     },
   ]
 
+  property_mappings = [
+    data.authentik_property_mapping_provider_scope.openid.id,
+    data.authentik_property_mapping_provider_scope.email.id,
+    data.authentik_property_mapping_provider_scope.profile.id,
+  ]
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      property_mappings,
       signing_key,
       encryption_key,
     ]
@@ -209,10 +242,15 @@ resource "authentik_provider_oauth2" "vault" {
     },
   ]
 
+  property_mappings = [
+    data.authentik_property_mapping_provider_scope.openid.id,
+    data.authentik_property_mapping_provider_scope.email.id,
+    data.authentik_property_mapping_provider_scope.profile.id,
+  ]
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      property_mappings,
       signing_key,
       encryption_key,
     ]
@@ -252,10 +290,15 @@ resource "authentik_provider_oauth2" "proxmox" {
     }
   ]
 
+  property_mappings = [
+    data.authentik_property_mapping_provider_scope.openid.id,
+    data.authentik_property_mapping_provider_scope.email.id,
+    data.authentik_property_mapping_provider_scope.profile.id,
+  ]
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      property_mappings,
       signing_key,
       encryption_key,
     ]
