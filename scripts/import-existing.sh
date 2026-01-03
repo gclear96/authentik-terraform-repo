@@ -55,3 +55,128 @@ if [[ -n "${GRAFANA_APPLICATION_ID}" ]]; then
 else
   echo "Skipping Grafana application import (not found in Authentik API)."
 fi
+
+# Argo CD OIDC (if present)
+ARGOCD_PROVIDER_ID="$(
+  api_get "/api/v3/providers/oauth2/?page_size=200" \
+    | jq -r '.results[] | select((.client_id // "") == "argocd" or (.name // "") == "argocd") | .pk' \
+    | head -n1
+)"
+
+ARGOCD_APPLICATION_ID="$(
+  api_get "/api/v3/core/applications/?page_size=200" \
+    | jq -r '.results[] | select((.slug // "") == "argocd") | .pk' \
+    | head -n1
+)"
+
+if [[ -n "${ARGOCD_PROVIDER_ID}" ]]; then
+  import_if_missing authentik_provider_oauth2.argocd "${ARGOCD_PROVIDER_ID}"
+else
+  echo "Skipping Argo CD provider import (not found in Authentik API)."
+fi
+
+if [[ -n "${ARGOCD_APPLICATION_ID}" ]]; then
+  import_if_missing authentik_application.argocd "${ARGOCD_APPLICATION_ID}"
+else
+  echo "Skipping Argo CD application import (not found in Authentik API)."
+fi
+
+# Forgejo OIDC (if present)
+FORGEJO_PROVIDER_ID="$(
+  api_get "/api/v3/providers/oauth2/?page_size=200" \
+    | jq -r '.results[] | select((.client_id // "") == "forgejo" or (.name // "") == "forgejo") | .pk' \
+    | head -n1
+)"
+
+FORGEJO_APPLICATION_ID="$(
+  api_get "/api/v3/core/applications/?page_size=200" \
+    | jq -r '.results[] | select((.slug // "") == "forgejo") | .pk' \
+    | head -n1
+)"
+
+if [[ -n "${FORGEJO_PROVIDER_ID}" ]]; then
+  import_if_missing authentik_provider_oauth2.forgejo "${FORGEJO_PROVIDER_ID}"
+else
+  echo "Skipping Forgejo provider import (not found in Authentik API)."
+fi
+
+if [[ -n "${FORGEJO_APPLICATION_ID}" ]]; then
+  import_if_missing authentik_application.forgejo "${FORGEJO_APPLICATION_ID}"
+else
+  echo "Skipping Forgejo application import (not found in Authentik API)."
+fi
+
+# Longhorn OIDC (if present)
+LONGHORN_PROVIDER_ID="$(
+  api_get "/api/v3/providers/oauth2/?page_size=200" \
+    | jq -r '.results[] | select((.client_id // "") == "longhorn" or (.name // "") == "longhorn") | .pk' \
+    | head -n1
+)"
+
+LONGHORN_APPLICATION_ID="$(
+  api_get "/api/v3/core/applications/?page_size=200" \
+    | jq -r '.results[] | select((.slug // "") == "longhorn") | .pk' \
+    | head -n1
+)"
+
+if [[ -n "${LONGHORN_PROVIDER_ID}" ]]; then
+  import_if_missing authentik_provider_oauth2.longhorn "${LONGHORN_PROVIDER_ID}"
+else
+  echo "Skipping Longhorn provider import (not found in Authentik API)."
+fi
+
+if [[ -n "${LONGHORN_APPLICATION_ID}" ]]; then
+  import_if_missing authentik_application.longhorn "${LONGHORN_APPLICATION_ID}"
+else
+  echo "Skipping Longhorn application import (not found in Authentik API)."
+fi
+
+# Vault OIDC (if present)
+VAULT_PROVIDER_ID="$(
+  api_get "/api/v3/providers/oauth2/?page_size=200" \
+    | jq -r '.results[] | select((.client_id // "") == "vault" or (.name // "") == "vault") | .pk' \
+    | head -n1
+)"
+
+VAULT_APPLICATION_ID="$(
+  api_get "/api/v3/core/applications/?page_size=200" \
+    | jq -r '.results[] | select((.slug // "") == "vault") | .pk' \
+    | head -n1
+)"
+
+if [[ -n "${VAULT_PROVIDER_ID}" ]]; then
+  import_if_missing authentik_provider_oauth2.vault "${VAULT_PROVIDER_ID}"
+else
+  echo "Skipping Vault provider import (not found in Authentik API)."
+fi
+
+if [[ -n "${VAULT_APPLICATION_ID}" ]]; then
+  import_if_missing authentik_application.vault "${VAULT_APPLICATION_ID}"
+else
+  echo "Skipping Vault application import (not found in Authentik API)."
+fi
+
+# Proxmox OIDC (if present)
+PROXMOX_PROVIDER_ID="$(
+  api_get "/api/v3/providers/oauth2/?page_size=200" \
+    | jq -r '.results[] | select((.client_id // "") == "proxmox" or (.name // "") == "proxmox") | .pk' \
+    | head -n1
+)"
+
+PROXMOX_APPLICATION_ID="$(
+  api_get "/api/v3/core/applications/?page_size=200" \
+    | jq -r '.results[] | select((.slug // "") == "proxmox") | .pk' \
+    | head -n1
+)"
+
+if [[ -n "${PROXMOX_PROVIDER_ID}" ]]; then
+  import_if_missing authentik_provider_oauth2.proxmox "${PROXMOX_PROVIDER_ID}"
+else
+  echo "Skipping Proxmox provider import (not found in Authentik API)."
+fi
+
+if [[ -n "${PROXMOX_APPLICATION_ID}" ]]; then
+  import_if_missing authentik_application.proxmox "${PROXMOX_APPLICATION_ID}"
+else
+  echo "Skipping Proxmox application import (not found in Authentik API)."
+fi

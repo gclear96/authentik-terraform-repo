@@ -106,5 +106,15 @@ Required Forgejo secrets:
 
 ## Initial scope
 
-Start small and avoid user/password management. The initial config in `main.tf` focuses on the Grafana OIDC
-application/provider pair (if present) and ignores some fields we’re not ready to enforce yet (notably secrets).
+Start small and avoid user/password management. The current config in `main.tf` focuses on OIDC
+applications/providers for:
+
+- Grafana (`grafana`)
+- Argo CD (`argocd`)
+- Forgejo (`forgejo`)
+- Longhorn (`longhorn`) — uses oauth2-proxy callback at `https://auth.k8s.magomago.moe/oauth2/callback`
+- Vault (`vault`)
+- Proxmox (`proxmox`) — adjust allowed redirect URIs as needed (see `proxmox_allowed_redirect_uris`)
+
+We still ignore some fields we’re not ready to enforce yet (notably secrets). Keep client secrets in Vault
+(`authentik/env`) and inject them into apps via External Secrets (see platform repo).

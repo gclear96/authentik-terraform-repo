@@ -15,3 +15,21 @@ variable "grafana_invalidation_flow_slug" {
   type        = string
   default     = "default-provider-invalidation-flow"
 }
+
+variable "forgejo_auth_source_name" {
+  description = "Forgejo auth source name used in the OAuth callback path (e.g. https://forgejo.../user/oauth2/<name>/callback)."
+  type        = string
+  default     = "authentik"
+}
+
+variable "longhorn_oidc_redirect_uri" {
+  description = "Redirect URI registered in Authentik for Longhorn UI (oauth2-proxy callback)."
+  type        = string
+  default     = "https://auth.k8s.magomago.moe/oauth2/callback"
+}
+
+variable "proxmox_allowed_redirect_uris" {
+  description = "Allowed redirect URIs for Proxmox OIDC (set to match your Proxmox WebUI callback URL)."
+  type        = list(string)
+  default     = ["https://pve1.magomago.moe"]
+}
