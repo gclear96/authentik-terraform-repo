@@ -219,13 +219,15 @@ EOF
 )"
 
 if [[ -z "${managed_users}" ]]; then
-  echo "No managed users found in Terraform config; skipping user imports."
-else
-  while IFS= read -r username; do
-    [[ -z "${username}" ]] && continue
-    import_user_if_missing "${username}"
-  done <<< "${managed_users}"
+  echo "WARN: could not resolve managed users via terraform console; falling back to defaults." >&2
+  managed_users="akadmin"
 fi
+
+echo "Managed users (import candidates): ${managed_users}"
+while IFS= read -r username; do
+  [[ -z "${username}" ]] && continue
+  import_user_if_missing "${username}"
+done <<< "${managed_users}"
 
 # Authentik groups (if present)
 GROUP_IDS="$(
@@ -251,10 +253,18 @@ EOF
 )"
 
 if [[ -z "${managed_groups}" ]]; then
-  echo "No managed groups found in Terraform config; skipping group imports."
-else
-  while IFS= read -r group_name; do
-    [[ -z "${group_name}" ]] && continue
-    import_group_if_missing "${group_name}"
-  done <<< "${managed_groups}"
+  echo "WARN: could not resolve managed groups via terraform console; falling back to defaults." >&2
+  managed_groups=$(cat <<'EOF'
+platform-admins
+grafana-admins
+grafana-editors
+argocd-admins
+EOF
+)
 fi
+
+echo "Managed groups (import candidates): ${managed_groups}"
+while IFS= read -r group_name; do
+  [[ -z "${group_name}" ]] && continue
+  import_group_if_missing "${group_name}"
+done <<< "${managed_groups}"
