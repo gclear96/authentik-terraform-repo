@@ -44,6 +44,7 @@ variable "authentik_groups" {
   description = "Authentik groups managed by Terraform."
   type        = list(string)
   default = [
+    "authentik Admins",
     "platform-admins",
     "grafana-admins",
     "grafana-editors",
@@ -66,7 +67,7 @@ variable "authentik_users" {
     akadmin = {
       username  = "akadmin"
       is_active = true
-      groups    = ["platform-admins"]
+      groups    = ["authentik Admins", "platform-admins"]
     }
   }
 }

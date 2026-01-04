@@ -255,6 +255,7 @@ EOF
 if [[ -z "${managed_groups}" ]]; then
   echo "WARN: could not resolve managed groups via terraform console; falling back to defaults." >&2
   managed_groups=$(cat <<'EOF'
+authentik Admins
 platform-admins
 grafana-admins
 grafana-editors
