@@ -6,6 +6,12 @@ locals {
   longhorn_external_url  = "https://longhorn.${var.cluster_domain}"
   vault_external_url     = "https://vault.${var.cluster_domain}"
   forgejo_auth_source    = var.forgejo_auth_source_name
+  managed_groups = toset([
+    "platform-admins",
+    "grafana-admins",
+    "grafana-editors",
+    "argocd-admins",
+  ])
 }
 
 # Required flows for OAuth2 providers.
@@ -37,6 +43,12 @@ resource "authentik_property_mapping_provider_scope" "groups" {
   expression = <<-EOT
 return {
   "groups": [group.name for group in request.user.ak_groups.all()],
+}
+
+resource "authentik_group" "managed" {
+  for_each = local.managed_groups
+
+  name = each.value
 }
 EOT
 }

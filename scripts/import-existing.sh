@@ -31,6 +31,19 @@ import_if_missing() {
   terraform import "${addr}" "${id}"
 }
 
+# Groups mapping scope (if present)
+GROUPS_MAPPING_ID="$(
+  api_get "/api/v3/propertymappings/provider/scope/?page_size=200" \
+    | jq -r '.results[] | select((.scope_name // "") == "groups" and (.name // "") == "authentik groups") | .pk' \
+    | head -n1
+)"
+
+if [[ -n "${GROUPS_MAPPING_ID}" ]]; then
+  import_if_missing authentik_property_mapping_provider_scope.groups "${GROUPS_MAPPING_ID}"
+else
+  echo "Skipping groups scope mapping import (not found in Authentik API)."
+fi
+
 # Grafana OIDC (if present)
 GRAFANA_PROVIDER_ID="$(
   api_get "/api/v3/providers/oauth2/?page_size=200" \
@@ -180,3 +193,25 @@ if [[ -n "${PROXMOX_APPLICATION_ID}" ]]; then
 else
   echo "Skipping Proxmox application import (not found in Authentik API)."
 fi
+
+# Authentik groups (if present)
+GROUP_IDS="$(
+  api_get "/api/v3/core/groups/?page_size=200" \
+    | jq -r '.results[] | "\(.name)|\(.pk)"'
+)"
+
+import_group_if_missing() {
+  local group_name="$1"
+  local group_id
+  group_id="$(printf '%s\n' "${GROUP_IDS}" | awk -F'|' -v name="${group_name}" '$1 == name { print $2; exit }')"
+  if [[ -n "${group_id}" ]]; then
+    import_if_missing "authentik_group.managed[\"${group_name}\"]" "${group_id}"
+  else
+    echo "Skipping group import (${group_name} not found in Authentik API)."
+  fi
+}
+
+import_group_if_missing "platform-admins"
+import_group_if_missing "grafana-admins"
+import_group_if_missing "grafana-editors"
+import_group_if_missing "argocd-admins"
