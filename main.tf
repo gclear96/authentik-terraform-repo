@@ -30,6 +30,16 @@ data "authentik_property_mapping_provider_scope" "profile" {
   scope_name = "profile"
 }
 
+# Custom scope: groups claim for OIDC role mapping in downstream apps.
+resource "authentik_property_mapping_provider_scope" "groups" {
+  name       = "authentik groups"
+  scope_name = "groups"
+  expression = <<-EOT
+return {
+  "groups": [group.name for group in request.user.ak_groups.all()],
+}
+EOT
+}
 # Minimal, safe initial scope:
 # - Manage the Grafana OIDC provider/application pair.
 # - Avoid enforcing secrets and “everything Authentik can do” on day 1.
@@ -54,6 +64,7 @@ resource "authentik_provider_oauth2" "grafana" {
     data.authentik_property_mapping_provider_scope.openid.id,
     data.authentik_property_mapping_provider_scope.email.id,
     data.authentik_property_mapping_provider_scope.profile.id,
+    authentik_property_mapping_provider_scope.groups.id,
   ]
 
   signing_key = var.authentik_signing_key_id
@@ -103,6 +114,7 @@ resource "authentik_provider_oauth2" "argocd" {
     data.authentik_property_mapping_provider_scope.openid.id,
     data.authentik_property_mapping_provider_scope.email.id,
     data.authentik_property_mapping_provider_scope.profile.id,
+    authentik_property_mapping_provider_scope.groups.id,
   ]
 
   signing_key = var.authentik_signing_key_id
@@ -152,6 +164,7 @@ resource "authentik_provider_oauth2" "forgejo" {
     data.authentik_property_mapping_provider_scope.openid.id,
     data.authentik_property_mapping_provider_scope.email.id,
     data.authentik_property_mapping_provider_scope.profile.id,
+    authentik_property_mapping_provider_scope.groups.id,
   ]
 
   signing_key = var.authentik_signing_key_id
@@ -201,6 +214,7 @@ resource "authentik_provider_oauth2" "longhorn" {
     data.authentik_property_mapping_provider_scope.openid.id,
     data.authentik_property_mapping_provider_scope.email.id,
     data.authentik_property_mapping_provider_scope.profile.id,
+    authentik_property_mapping_provider_scope.groups.id,
   ]
 
   signing_key = var.authentik_signing_key_id
@@ -250,6 +264,7 @@ resource "authentik_provider_oauth2" "vault" {
     data.authentik_property_mapping_provider_scope.openid.id,
     data.authentik_property_mapping_provider_scope.email.id,
     data.authentik_property_mapping_provider_scope.profile.id,
+    authentik_property_mapping_provider_scope.groups.id,
   ]
 
   signing_key = var.authentik_signing_key_id
@@ -299,6 +314,7 @@ resource "authentik_provider_oauth2" "proxmox" {
     data.authentik_property_mapping_provider_scope.openid.id,
     data.authentik_property_mapping_provider_scope.email.id,
     data.authentik_property_mapping_provider_scope.profile.id,
+    authentik_property_mapping_provider_scope.groups.id,
   ]
 
   signing_key = var.authentik_signing_key_id
