@@ -211,7 +211,21 @@ import_user_if_missing() {
   fi
 }
 
-import_user_if_missing "akadmin"
+# Import users declared in Terraform config.
+managed_users="$(
+  terraform console -json <<'EOF' | jq -r '.[]' || true
+keys(var.authentik_users)
+EOF
+)"
+
+if [[ -z "${managed_users}" ]]; then
+  echo "No managed users found in Terraform config; skipping user imports."
+else
+  while IFS= read -r username; do
+    [[ -z "${username}" ]] && continue
+    import_user_if_missing "${username}"
+  done <<< "${managed_users}"
+fi
 
 # Authentik groups (if present)
 GROUP_IDS="$(
@@ -230,7 +244,17 @@ import_group_if_missing() {
   fi
 }
 
-import_group_if_missing "platform-admins"
-import_group_if_missing "grafana-admins"
-import_group_if_missing "grafana-editors"
-import_group_if_missing "argocd-admins"
+managed_groups="$(
+  terraform console -json <<'EOF' | jq -r '.[]' || true
+distinct(concat(var.authentik_groups, flatten([for _, user in var.authentik_users : try(user.groups, [])])))
+EOF
+)"
+
+if [[ -z "${managed_groups}" ]]; then
+  echo "No managed groups found in Terraform config; skipping group imports."
+else
+  while IFS= read -r group_name; do
+    [[ -z "${group_name}" ]] && continue
+    import_group_if_missing "${group_name}"
+  done <<< "${managed_groups}"
+fi
