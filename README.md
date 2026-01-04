@@ -122,7 +122,7 @@ Managed groups (user memberships are managed via Terraform):
 - `grafana-editors`
 - `argocd-admins`
 
-Managed users (no passwords in Terraform; groups are managed):
+Managed users (no passwords or superuser flags in Terraform; groups are managed):
 - `akadmin` (member of `platform-admins` by default)
 
 We still ignore some fields we’re not ready to enforce yet (notably secrets). Keep client secrets in Vault

@@ -60,7 +60,6 @@ resource "authentik_user" "managed" {
   name         = try(each.value.name, null)
   email        = try(each.value.email, null)
   is_active    = try(each.value.is_active, true)
-  is_superuser = try(each.value.is_superuser, false)
   type         = try(each.value.type, "internal")
   path         = try(each.value.path, null)
 

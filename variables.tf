@@ -58,7 +58,6 @@ variable "authentik_users" {
     name         = optional(string)
     email        = optional(string)
     is_active    = optional(bool)
-    is_superuser = optional(bool)
     type         = optional(string)
     path         = optional(string)
     groups       = optional(list(string))
