@@ -56,12 +56,12 @@ resource "authentik_group" "managed" {
 resource "authentik_user" "managed" {
   for_each = var.authentik_users
 
-  username     = each.value.username
-  name         = try(each.value.name, null)
-  email        = try(each.value.email, null)
-  is_active    = try(each.value.is_active, true)
-  type         = try(each.value.type, "internal")
-  path         = try(each.value.path, null)
+  username  = each.value.username
+  name      = try(each.value.name, null)
+  email     = try(each.value.email, null)
+  is_active = try(each.value.is_active, true)
+  type      = try(each.value.type, "internal")
+  path      = try(each.value.path, null)
 
   groups = [
     for group_name in try(each.value.groups, []) : authentik_group.managed[group_name].id

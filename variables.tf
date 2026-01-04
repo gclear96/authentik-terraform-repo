@@ -54,13 +54,13 @@ variable "authentik_groups" {
 variable "authentik_users" {
   description = "Authentik users managed by Terraform (passwords not managed here)."
   type = map(object({
-    username     = string
-    name         = optional(string)
-    email        = optional(string)
-    is_active    = optional(bool)
-    type         = optional(string)
-    path         = optional(string)
-    groups       = optional(list(string))
+    username  = string
+    name      = optional(string)
+    email     = optional(string)
+    is_active = optional(bool)
+    type      = optional(string)
+    path      = optional(string)
+    groups    = optional(list(string))
   }))
   default = {
     akadmin = {
