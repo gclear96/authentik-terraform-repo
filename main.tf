@@ -44,6 +44,8 @@ resource "authentik_property_mapping_provider_scope" "groups" {
 return {
   "groups": [group.name for group in request.user.ak_groups.all()],
 }
+EOT
+}
 
 resource "authentik_group" "managed" {
   for_each = local.managed_groups
@@ -71,8 +73,6 @@ resource "authentik_user" "managed" {
       password,
     ]
   }
-}
-EOT
 }
 # Minimal, safe initial scope:
 # - Manage the Grafana OIDC provider/application pair.
