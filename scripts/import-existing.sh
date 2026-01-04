@@ -194,6 +194,25 @@ else
   echo "Skipping Proxmox application import (not found in Authentik API)."
 fi
 
+# Authentik users (if present)
+USER_IDS="$(
+  api_get "/api/v3/core/users/?page_size=200" \
+    | jq -r '.results[] | "\(.username)|\(.pk)"'
+)"
+
+import_user_if_missing() {
+  local username="$1"
+  local user_id
+  user_id="$(printf '%s\n' "${USER_IDS}" | awk -F'|' -v name="${username}" '$1 == name { print $2; exit }')"
+  if [[ -n "${user_id}" ]]; then
+    import_if_missing "authentik_user.managed[\"${username}\"]" "${user_id}"
+  else
+    echo "Skipping user import (${username} not found in Authentik API)."
+  fi
+}
+
+import_user_if_missing "akadmin"
+
 # Authentik groups (if present)
 GROUP_IDS="$(
   api_get "/api/v3/core/groups/?page_size=200" \

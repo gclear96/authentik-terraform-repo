@@ -6,12 +6,12 @@ locals {
   longhorn_external_url  = "https://longhorn.${var.cluster_domain}"
   vault_external_url     = "https://vault.${var.cluster_domain}"
   forgejo_auth_source    = var.forgejo_auth_source_name
-  managed_groups = toset([
-    "platform-admins",
-    "grafana-admins",
-    "grafana-editors",
-    "argocd-admins",
-  ])
+  managed_groups = toset(distinct(concat(
+    var.authentik_groups,
+    flatten([
+      for _, user in var.authentik_users : try(user.groups, [])
+    ]),
+  )))
 }
 
 # Required flows for OAuth2 providers.
@@ -49,6 +49,28 @@ resource "authentik_group" "managed" {
   for_each = local.managed_groups
 
   name = each.value
+}
+
+resource "authentik_user" "managed" {
+  for_each = var.authentik_users
+
+  username     = each.value.username
+  name         = try(each.value.name, null)
+  email        = try(each.value.email, null)
+  is_active    = try(each.value.is_active, true)
+  is_superuser = try(each.value.is_superuser, false)
+  type         = try(each.value.type, "internal")
+  path         = try(each.value.path, null)
+
+  groups = [
+    for group_name in try(each.value.groups, []) : authentik_group.managed[group_name].id
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      password,
+    ]
+  }
 }
 EOT
 }

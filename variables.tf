@@ -39,3 +39,35 @@ variable "authentik_signing_key_id" {
   type        = string
   default     = "d7c308b4-41f5-40f2-af52-42220e3de45e"
 }
+
+variable "authentik_groups" {
+  description = "Authentik groups managed by Terraform."
+  type        = list(string)
+  default = [
+    "platform-admins",
+    "grafana-admins",
+    "grafana-editors",
+    "argocd-admins",
+  ]
+}
+
+variable "authentik_users" {
+  description = "Authentik users managed by Terraform (passwords not managed here)."
+  type = map(object({
+    username     = string
+    name         = optional(string)
+    email        = optional(string)
+    is_active    = optional(bool)
+    is_superuser = optional(bool)
+    type         = optional(string)
+    path         = optional(string)
+    groups       = optional(list(string))
+  }))
+  default = {
+    akadmin = {
+      username  = "akadmin"
+      is_active = true
+      groups    = ["platform-admins"]
+    }
+  }
+}

@@ -116,11 +116,14 @@ applications/providers for:
 - Vault (`vault`)
 - Proxmox (`proxmox`) — adjust allowed redirect URIs as needed (see `proxmox_allowed_redirect_uris`)
 
-Managed groups (no user assignments in Terraform yet):
+Managed groups (user memberships are managed via Terraform):
 - `platform-admins`
 - `grafana-admins`
 - `grafana-editors`
 - `argocd-admins`
+
+Managed users (no passwords in Terraform; groups are managed):
+- `akadmin` (member of `platform-admins` by default)
 
 We still ignore some fields we’re not ready to enforce yet (notably secrets). Keep client secrets in Vault
 (`authentik/env`) and inject them into apps via External Secrets (see platform repo).
