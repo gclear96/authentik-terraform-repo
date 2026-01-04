@@ -56,10 +56,11 @@ resource "authentik_provider_oauth2" "grafana" {
     data.authentik_property_mapping_provider_scope.profile.id,
   ]
 
+  signing_key = var.authentik_signing_key_id
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      signing_key,
       encryption_key,
     ]
   }
@@ -104,10 +105,11 @@ resource "authentik_provider_oauth2" "argocd" {
     data.authentik_property_mapping_provider_scope.profile.id,
   ]
 
+  signing_key = var.authentik_signing_key_id
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      signing_key,
       encryption_key,
     ]
   }
@@ -152,10 +154,11 @@ resource "authentik_provider_oauth2" "forgejo" {
     data.authentik_property_mapping_provider_scope.profile.id,
   ]
 
+  signing_key = var.authentik_signing_key_id
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      signing_key,
       encryption_key,
     ]
   }
@@ -200,10 +203,11 @@ resource "authentik_provider_oauth2" "longhorn" {
     data.authentik_property_mapping_provider_scope.profile.id,
   ]
 
+  signing_key = var.authentik_signing_key_id
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      signing_key,
       encryption_key,
     ]
   }
@@ -248,10 +252,11 @@ resource "authentik_provider_oauth2" "vault" {
     data.authentik_property_mapping_provider_scope.profile.id,
   ]
 
+  signing_key = var.authentik_signing_key_id
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      signing_key,
       encryption_key,
     ]
   }
@@ -296,10 +301,11 @@ resource "authentik_provider_oauth2" "proxmox" {
     data.authentik_property_mapping_provider_scope.profile.id,
   ]
 
+  signing_key = var.authentik_signing_key_id
+
   lifecycle {
     ignore_changes = [
       client_secret,
-      signing_key,
       encryption_key,
     ]
   }

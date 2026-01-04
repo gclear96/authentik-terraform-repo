@@ -33,3 +33,9 @@ variable "proxmox_allowed_redirect_uris" {
   type        = list(string)
   default     = ["https://pve1.magomago.moe"]
 }
+
+variable "authentik_signing_key_id" {
+  description = "Certificate keypair UUID used to sign OIDC tokens (RS256)."
+  type        = string
+  default     = "d7c308b4-41f5-40f2-af52-42220e3de45e"
+}
